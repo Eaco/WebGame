@@ -7,8 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('WebGame:server');
 var http = require('http');
-var io = require('socket.io')(app);
-var fs = require('fs');
+
+
+
 
 /**
  * Get port from environment and store in Express.
@@ -22,6 +23,8 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+require('./socket.js')(io);                     //adds all that sweet sweet socket logic we all love
 
 /**
  * Listen on provided port, on all network interfaces.

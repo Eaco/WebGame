@@ -1,6 +1,4 @@
 $(function(){
-
-
     //Declaring Global Variables
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
@@ -25,20 +23,29 @@ $(function(){
     };
 
     logic = function(){
-        chars.forEach(function(){
-            move(character);
+        chars.forEach(function(char){
+            move(char);
         });
     };
-    draw = function() {
+    resetCanvas = function() {
         context.canvas.width  = window.innerWidth;
         context.canvas.height = window.innerHeight;
-    }
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    drawChar = function(char){
+        context.rect(char.xPosition, char.yPosition, char.width, char.height);
+        context.stroke();
+    };
+
     render = function(){
         //console.log("rendering");
-        draw();
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.rect(character.xPosition, character.yPosition, character.width, character.height);
-        context.stroke();
+        resetCanvas();
+        chars.forEach(function(char){
+            drawChar(char);
+        });
+
+
     };
 
     main = function(){
@@ -53,7 +60,7 @@ $(function(){
     main();
 });
 
-
+var socket = io.connect();
 var LEFT_KEY_CODE = 68;
 var RIGHT_KEY_CODE = 65;
 var UP_KEY_CODE = 87;
@@ -93,6 +100,7 @@ $(document).keydown(function(e){
         else if(code == LEFT_KEY_CODE){
             character.left = true;
         }
+        socket.emit('key', code);
 
         console.log(code + " Down");
     }
@@ -116,4 +124,27 @@ $(document).keyup(function(e){
         }
         console.log(code + " up");
     }
+});
+
+
+
+
+//Socket logic here
+
+socket.on('newchar', function(id){
+    console.log('joiner: ' + id);
+    var newCharacter =
+    {
+        id: id,
+        height: 100,
+        width: 100,
+        speed: 5,
+        xPosition: 150,
+        yPosition: 100,
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+    };
+    chars.push(newCharacter);
 });
