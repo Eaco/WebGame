@@ -56,7 +56,7 @@ $(function(){
 
         requestAnimationFrame(main);
     };
-
+    socket.emit('loaded');
     main();
 });
 
@@ -122,6 +122,8 @@ $(document).keyup(function(e){
         else if(code == LEFT_KEY_CODE){
             character.left = false;
         }
+        socket.emit('!key', code)
+
         console.log(code + " up");
     }
 });
@@ -147,4 +149,59 @@ socket.on('newchar', function(id){
         right: false,
     };
     chars.push(newCharacter);
+});
+
+
+socket.on('currentCharacters', function(serverChars){
+    console.log('totes worked');
+    serverChars.forEach(function(char){
+        console.log(char.id);
+        chars.push(char);
+    })
+});
+socket.on('soundOff', function(){
+    console.log('soundOff');
+    socket.emit('sounder', character);
+});
+
+socket.on('keyDown', function(key, id){
+    console.log(id + '  down  ' + key);
+    for(var i = 0, charLen = chars.length; i<charLen; i++ ){
+        if(chars[i].id == id){
+
+            if(key == UP_KEY_CODE){
+                chars[i].up = true;
+            }
+            else if(key == DOWN_KEY_CODE){
+                chars[i].down = true;
+            }
+            else if(key == RIGHT_KEY_CODE){
+                chars[i].right = true;
+            }
+            else if(key == LEFT_KEY_CODE){
+                chars[i].left = true;
+            }
+        }
+    }
+});
+
+socket.on('keyUp', function(key, id){
+    console.log(id + '  up  ' + key);
+    for(var i = 0, charLen = chars.length; i<charLen; i++ ){
+        if(chars[i].id == id){
+
+            if(key == UP_KEY_CODE){
+                chars[i].up = false;
+            }
+            else if(key == DOWN_KEY_CODE){
+                chars[i].down = false;
+            }
+            else if(key == RIGHT_KEY_CODE){
+                chars[i].right = false;
+            }
+            else if(key == LEFT_KEY_CODE){
+                chars[i].left = false;
+            }
+        }
+    }
 });
