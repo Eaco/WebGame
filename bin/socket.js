@@ -11,7 +11,7 @@ module.exports = function (io) {
             id: socket.id,
             height: 100,
             width: 100,
-            speed: 5,
+            speed: 255,
             xPosition: 150,
             yPosition: 100,
             up: false,
@@ -26,7 +26,7 @@ module.exports = function (io) {
         socket.broadcast.emit('soundOff');
 
         socket.on('loaded', function(){
-            socket.emit('currentCharacters', chars);
+            socket.emit('currentCharacters', chars, socket.id);
         });
 
         socket.on('sounder', function(char){
@@ -34,7 +34,7 @@ module.exports = function (io) {
             char.id = socket.id;
             console.log(char);
             for(var i = 0, charLen = chars.length; i<charLen; i++ ){
-                if(chars[i].id == socket.id){
+                if(chars[i].id == socket.id){1
                     console.log('character with id: ' + socket.id + ' being updated successfully')
                     chars[i] = char;
                 }

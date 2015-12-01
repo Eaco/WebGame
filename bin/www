@@ -14,15 +14,21 @@ var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
+var port        = process.env.OPENSHIFT_NODEJS_PORT || 3000;
+var ip_address  = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+//var port = normalizePort(process.env.PORT || '3000');
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
+app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(app).listen(app.get('port') ,app.get('ip'), function () {
+  console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
+});
+
 var io = require('socket.io').listen(server);
 require('./socket.js')(io);                     //adds all that sweet sweet socket logic we all love
 
@@ -30,7 +36,7 @@ require('./socket.js')(io);                     //adds all that sweet sweet sock
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, ip_address);
 server.on('error', onError);
 server.on('listening', onListening);
 

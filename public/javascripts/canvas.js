@@ -11,20 +11,20 @@ $(function(){
 
 
 
-    move = function(char){
-        if(char.left)
-            char.xPosition += char.speed;
-        if(char.right)
-            char.xPosition -= char.speed;
+    move = function(char, delta){
+        if(char.left && char.xPosition >= 0)
+            char.xPosition += char.speed * delta;
+        if(char.right && char.xPosition <= context.canvas.width)
+            char.xPosition -= char.speed * delta;
         if(char.up)
-            char.yPosition -= char.speed;
+            char.yPosition -= char.speed * delta;
         if(char.down)
-            char.yPosition += char.speed;
+            char.yPosition += char.speed * delta;
     };
 
-    logic = function(){
+    logic = function(delta){
         chars.forEach(function(char){
-            move(char);
+            move(char, delta);
         });
     };
     resetCanvas = function() {
@@ -47,22 +47,28 @@ $(function(){
 
 
     };
-
+    var now = Date.now();
+    var delta;
+    var then = Date.now();
     main = function(){
         //console.log("main game loop")
-        logic();
+        now = Date.now();
+        delta = (now - then)/1000;
+        then = now;
+        logic(delta);
 
         render();
 
         requestAnimationFrame(main);
+
     };
     socket.emit('loaded');
     main();
 });
 
 var socket = io.connect();
-var LEFT_KEY_CODE = 68;
-var RIGHT_KEY_CODE = 65;
+var RIGHT_KEY_CODE = 68;
+var LEFT_KEY_CODE = 65;
 var UP_KEY_CODE = 87;
 var DOWN_KEY_CODE = 83;
 var down = [];
@@ -73,7 +79,7 @@ var character =
     id: 0,
     height: 100,
     width: 100,
-    speed: 5,
+    speed: 255,
     xPosition: 150,
     yPosition: 100,
     up: false,
@@ -94,10 +100,10 @@ $(document).keydown(function(e){
         else if(code == DOWN_KEY_CODE){
             character.down = true;
         }
-        else if(code == RIGHT_KEY_CODE){
+        else if(code == LEFT_KEY_CODE){
             character.right = true;
         }
-        else if(code == LEFT_KEY_CODE){
+        else if(code == RIGHT_KEY_CODE){
             character.left = true;
         }
         socket.emit('key', code);
@@ -116,10 +122,10 @@ $(document).keyup(function(e){
         else if(code == DOWN_KEY_CODE){
             character.down = false;
         }
-        else if(code == RIGHT_KEY_CODE){
+        else if(code == LEFT_KEY_CODE){
             character.right = false;
         }
-        else if(code == LEFT_KEY_CODE){
+        else if(code == RIGHT_KEY_CODE){
             character.left = false;
         }
         socket.emit('!key', code)
@@ -140,7 +146,7 @@ socket.on('newchar', function(id){
         id: id,
         height: 100,
         width: 100,
-        speed: 5,
+        speed: 255,
         xPosition: 150,
         yPosition: 100,
         up: false,
@@ -152,11 +158,13 @@ socket.on('newchar', function(id){
 });
 
 
-socket.on('currentCharacters', function(serverChars){
+socket.on('currentCharacters', function(serverChars, id){
     console.log('totes worked');
     serverChars.forEach(function(char){
         console.log(char.id);
-        chars.push(char);
+        if(char.id != id) {
+            chars.push(char);
+        }
     })
 });
 socket.on('soundOff', function(){
@@ -175,10 +183,10 @@ socket.on('keyDown', function(key, id){
             else if(key == DOWN_KEY_CODE){
                 chars[i].down = true;
             }
-            else if(key == RIGHT_KEY_CODE){
+            else if(key == LEFT_KEY_CODE){
                 chars[i].right = true;
             }
-            else if(key == LEFT_KEY_CODE){
+            else if(key == RIGHT_KEY_CODE){
                 chars[i].left = true;
             }
         }
@@ -196,10 +204,10 @@ socket.on('keyUp', function(key, id){
             else if(key == DOWN_KEY_CODE){
                 chars[i].down = false;
             }
-            else if(key == RIGHT_KEY_CODE){
+            else if(key == LEFT_KEY_CODE){
                 chars[i].right = false;
             }
-            else if(key == LEFT_KEY_CODE){
+            else if(key == RIGHT_KEY_CODE){
                 chars[i].left = false;
             }
         }
