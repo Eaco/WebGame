@@ -2,24 +2,21 @@ $(function(){
     //Declaring Global Variables
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
-
-    var gameon = true;
-
-
-
-
-
-
+    var mousePos = {x: 0, y: 0};
+    context.canvas.addEventListener('mousemove', function(evt) {
+        mousePos = getMousePos(canvas, evt);
+        //console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+    }, false);
 
     move = function(char, delta){
-        if(char.left && char.xPosition >= 0)
+        if(char.left && char.xPosition <= (context.canvas.width - char.width))
             char.xPosition += char.speed * delta;
-        if(char.right && char.xPosition <= context.canvas.width)
+        if(char.right && char.xPosition >= 0)
             char.xPosition -= char.speed * delta;
-        if(char.up)
+        if(char.up && char.yPosition  >= 0)
             char.yPosition -= char.speed * delta;
-        if(char.down)
-            char.yPosition += char.speed * delta;
+        if(char.down && char.yPosition <= context.canvas.height - char.height)
+        char.yPosition += char.speed * delta;
     };
 
     logic = function(delta){
@@ -34,7 +31,14 @@ $(function(){
     };
 
     drawChar = function(char){
-        context.rect(char.xPosition, char.yPosition, char.width, char.height);
+        var rotation = convertToRadians(mousePos);
+        console.log(rotation);
+        context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
+        context.rotate(-rotation);
+        context.translate( -char.width / 2, - char.height / 2 );
+        context.rect(0, 0, char.width, char.height);
+        context.rotate(rotation);
+        context.translate( -(char.xPosition), -(char.yPosition ));
         context.stroke();
     };
 
@@ -89,6 +93,25 @@ var character =
 };
 
 chars.push(character);
+
+
+// CLIENT INPUT HERER
+getMousePos =  function(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+};
+
+convertToRadians = function (mouse){
+    //console.log('Getting rotation of player')
+    var diffX = mouse.x - (character.xPosition + character.width / 2);
+    var diffY = (character.yPosition + character.height / 2) - mouse.y;
+    var tanner = diffY / diffX;
+    return Math.atan(tanner);
+};
+
 
 $(document).keydown(function(e){
     var code = e.keyCode;
