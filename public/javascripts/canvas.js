@@ -31,19 +31,21 @@ $(function(){
     };
 
     drawChar = function(char){
-        var rotation = convertToRadians(mousePos);
-        console.log(rotation);
+        //console.log(char.rotation);
+        console.log('drawing char ' + char.id + ' at rotation ' + char.rotation);
         context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
-        context.rotate(-rotation);
+        context.rotate(-char.rotation);
         context.translate( -char.width / 2, - char.height / 2 );
         context.rect(0, 0, char.width, char.height);
-        context.rotate(rotation);
+        context.translate( char.width / 2, char.height / 2 );
+        context.rotate(char.rotation);
         context.translate( -(char.xPosition), -(char.yPosition ));
         context.stroke();
     };
 
     render = function(){
         //console.log("rendering");
+
         resetCanvas();
         chars.forEach(function(char){
             drawChar(char);
@@ -54,15 +56,27 @@ $(function(){
     var now = Date.now();
     var delta;
     var then = Date.now();
+
+    var rotateRefresh = 0;
+    var ROTATE_REFRESH_RATE = 5;
+
     main = function(){
         //console.log("main game loop")
         now = Date.now();
+        chars[0].rotation = convertToRadians(mousePos);
         delta = (now - then)/1000;
         then = now;
         logic(delta);
 
         render();
 
+        if(rotateRefresh == ROTATE_REFRESH_RATE){
+            socket.emit('rotate', character.rotation);
+            rotateRefresh = 0;
+        }
+        else{
+            rotateRefresh++;
+        }
         requestAnimationFrame(main);
 
     };
@@ -90,6 +104,7 @@ var character =
     down: false,
     left: false,
     right: false,
+    rotation: 0,
 };
 
 chars.push(character);
@@ -159,6 +174,15 @@ $(document).keyup(function(e){
 
 
 
+//helper functions
+getIndexFromId = function (id){
+    for(var i = 0, charLen = chars.length; i<charLen; i++ ){
+        if(chars[i].id == id){
+            return i;
+        }
+    }
+    return -1;
+}
 
 //Socket logic here
 
@@ -176,10 +200,18 @@ socket.on('newchar', function(id){
         down: false,
         left: false,
         right: false,
+        rotation: 0,
     };
     chars.push(newCharacter);
 });
 
+socket.on('rotationToClient', function(rotation, id){
+    console.log('reaching rotation from ' + id);
+    var ind = getIndexFromId(id);
+    if(chars[ind] != null){
+        chars[ind].rotation = rotation;
+    }
+});
 
 socket.on('currentCharacters', function(serverChars, id){
     console.log('totes worked');

@@ -18,6 +18,7 @@ module.exports = function (io) {
             down: false,
             left: false,
             right: false,
+            rotation: 0,
         };
         chars.push(character);
 
@@ -34,7 +35,7 @@ module.exports = function (io) {
             char.id = socket.id;
             console.log(char);
             for(var i = 0, charLen = chars.length; i<charLen; i++ ){
-                if(chars[i].id == socket.id){1
+                if(chars[i].id == socket.id){
                     console.log('character with id: ' + socket.id + ' being updated successfully')
                     chars[i] = char;
                 }
@@ -61,6 +62,12 @@ module.exports = function (io) {
             else {
                 console.log('User not disconnected properly')
             }
+        });
+
+        socket.on('rotate', function(rotation){
+            var ind = getIndexFromId(socket.id);
+            chars[ind].rotation = rotation;
+            socket.broadcast.emit('rotationToClient', rotation, socket.id);
         });
 
 
