@@ -70,6 +70,20 @@ module.exports = function (io) {
             socket.broadcast.emit('rotationToClient', rotation, socket.id);
         });
 
+        socket.on('syncMe', function(char){
+            var sync = getIndexFromId(socket.id);
+            if(sync != -1){
+                var id = chars[sync].id;
+                chars[sync] = char;         //this sets ID to zero. Dammit
+                chars[sync].id = id;
+                socket.broadcast.emit('syncHim', char);
+
+            }
+            else{
+                console.log('Can\'t synch a char that doesn\'t exit');
+            }
+        });
+
 
         getIndexFromId = function (id){
             for(var i = 0, charLen = chars.length; i<charLen; i++ ){

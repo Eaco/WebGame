@@ -34,7 +34,7 @@ $(function(){
 
     drawChar = function(char){
         //console.log(char.rotation);
-        console.log('drawing char ' + char.id + ' at rotation ' + char.rotation);
+        //console.log('drawing char ' + char.id + ' at rotation ' + char.rotation);
         context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
         context.rotate(-char.rotation);
         context.translate( -char.width / 2, - char.height / 2 );
@@ -159,15 +159,19 @@ $(document).keyup(function(e){
         down[code] = false;
         if(code == UP_KEY_CODE){
             character.up = false;
+            ForceSync(character);
         }
         else if(code == DOWN_KEY_CODE){
             character.down = false;
+            ForceSync(character);
         }
         else if(code == LEFT_KEY_CODE){
             character.right = false;
+            ForceSync(character);
         }
         else if(code == RIGHT_KEY_CODE){
             character.left = false;
+            ForceSync(character);
         }
         socket.emit('!key', code)
 
@@ -178,6 +182,12 @@ $(document).keyup(function(e){
 
 
 //helper functions
+ForceSync = function(char){
+    socket.emit('syncMe', char);
+}
+
+
+
 getIndexFromId = function (id){
     for(var i = 0, charLen = chars.length; i<charLen; i++ ){
         if(chars[i].id == id){
@@ -255,7 +265,6 @@ socket.on('keyUp', function(key, id){
     console.log(id + '  up  ' + key);
     for(var i = 0, charLen = chars.length; i<charLen; i++ ){
         if(chars[i].id == id){
-
             if(key == UP_KEY_CODE){
                 chars[i].up = false;
             }
@@ -269,5 +278,18 @@ socket.on('keyUp', function(key, id){
                 chars[i].left = false;
             }
         }
+    }
+});
+
+socket.on('syncHim', function(char){
+    var ind = getIndexFromId(char.id);
+    if(ind != -1)
+    {
+        chars[ind] = char;
+        console.log('character synched successfully ' + char.id)
+    }
+    else
+    {
+        console.log('what char?');
     }
 });
