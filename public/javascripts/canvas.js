@@ -2,6 +2,8 @@ $(function(){
     //Declaring Global Variables
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
+    var imageObj = new Image();
+    imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
     var mousePos = {x: 0, y: 0};
     context.canvas.addEventListener('mousemove', function(evt) {
         mousePos = getMousePos(canvas, evt);
@@ -36,7 +38,8 @@ $(function(){
         context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
         context.rotate(-char.rotation);
         context.translate( -char.width / 2, - char.height / 2 );
-        context.rect(0, 0, char.width, char.height);
+        context.rect(0, 0, char.width, char.height);1
+        context.drawImage(imageObj, 0, 0, 100,100);
         context.translate( char.width / 2, char.height / 2 );
         context.rotate(char.rotation);
         context.translate( -(char.xPosition), -(char.yPosition ));
