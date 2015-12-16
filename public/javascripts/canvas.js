@@ -5,10 +5,20 @@ $(function(){
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
     var mousePos = {x: 0, y: 0};
+
+
+    //eventListeners
     context.canvas.addEventListener('mousemove', function(evt) {
         mousePos = getMousePos(canvas, evt);
         //console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
     }, false);
+
+    canvas.addEventListener('click', function(evt) {
+        console.log('Click heard at ' + evt.pageX + ' ' + evt.pageY);
+        var click = {x: evt.pageX, y: evt.pageY};
+        projectile(click);
+    }, false);
+
 
     move = function(char, delta){
         if(char.left && char.xPosition <= (context.canvas.width - char.width))
@@ -18,7 +28,7 @@ $(function(){
         if(char.up && char.yPosition  >= 0)
             char.yPosition -= char.speed * delta;
         if(char.down && char.yPosition <= context.canvas.height - char.height)
-        char.yPosition += char.speed * delta;
+            char.yPosition += char.speed * delta;
     };
 
     logic = function(delta){
@@ -92,8 +102,9 @@ var RIGHT_KEY_CODE = 68;
 var LEFT_KEY_CODE = 65;
 var UP_KEY_CODE = 87;
 var DOWN_KEY_CODE = 83;
-var down = [];
-var chars = [];
+var down = [];                              //to keep track of keys down
+var chars = [];                             //list of characters
+var proj = [];                              //list of projectiles
 
 var character =
 {
@@ -196,6 +207,12 @@ getIndexFromId = function (id){
     }
     return -1;
 }
+
+projectile = function(click){
+    var xdiff = click.x - (character.xPosition + character.width/2);
+    var ydiff = click.y - (character.yPosition + character.width/2);
+    xspeed = Math.tan(character.rotation)
+};
 
 //Socket logic here
 

@@ -18,7 +18,7 @@ module.exports = function (io) {
             down: false,
             left: false,
             right: false,
-            rotation: 0,
+            rotation: 0
         };
         chars.push(character);
 
@@ -94,4 +94,4 @@ module.exports = function (io) {
             return -1;
         }
     });
-}
+};
