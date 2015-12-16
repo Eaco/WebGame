@@ -38,11 +38,11 @@ $(function(){
         context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
         context.rotate(-char.rotation);
         context.translate( -char.width / 2, - char.height / 2 );
-        context.rect(0, 0, char.width, char.height);1
+        context.rect(0, 0, char.width, char.height);
         context.drawImage(imageObj, 0, 0, 100,100);
         context.translate( char.width / 2, char.height / 2 );
         context.rotate(char.rotation);
-        context.translate( -(char.xPosition), -(char.yPosition ));
+        context.translate( -(char.xPosition +  char.width / 2), -(char.yPosition + char.height / 2));
         context.stroke();
     };
 
