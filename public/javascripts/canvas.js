@@ -4,6 +4,8 @@ $(function(){
     var context = canvas.getContext('2d');
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
+    var bulImg = new Image();
+    bulImg.src = "https://allisterf.files.wordpress.com/2010/09/bullet.gif"
     var mousePos = {x: 0, y: 0};
 
 
@@ -31,10 +33,19 @@ $(function(){
             char.yPosition += char.speed * delta;
     };
 
+    ProjMove = function(bul, delta){
+        bul.xPos += bul.xSpeed * delta;
+        bul.yPos += bul.ySpeed * delta;
+    };
+
     logic = function(delta){
         chars.forEach(function(char){
             move(char, delta);
         });
+
+        proj.forEach(function(bul){
+            ProjMove(bul, delta);
+        })
     };
     resetCanvas = function() {
         context.canvas.width  = window.innerWidth;
@@ -56,6 +67,10 @@ $(function(){
         context.stroke();
     };
 
+    drawBul = function(bul) {
+        context.drawImage(bulImg, bul.xPos, bul.yPos, 20, 20);
+    };
+
     render = function(){
         //console.log("rendering");
 
@@ -63,6 +78,9 @@ $(function(){
         chars.forEach(function(char){
             drawChar(char);
         });
+        proj.forEach(function(bul){
+            drawBul(bul);
+        })
 
 
     };
@@ -138,7 +156,10 @@ convertToRadians = function (mouse){
     var diffX = mouse.x - (character.xPosition + character.width / 2);
     var diffY = (character.yPosition + character.height / 2) - mouse.y;
     var tanner = diffY / diffX;
-    return Math.atan(tanner);
+    if (diffX < 0)
+        return (3.14159 + Math.atan(tanner));
+    else
+        return Math.atan(tanner);
 };
 
 
@@ -209,9 +230,46 @@ getIndexFromId = function (id){
 }
 
 projectile = function(click){
-    var xdiff = click.x - (character.xPosition + character.width/2);
-    var ydiff = click.y - (character.yPosition + character.width/2);
-    xspeed = Math.tan(character.rotation)
+    var xex = Math.cos(character.rotation);
+    var yex = Math.sin(character.rotation);
+    var xspeed;
+    var yspeed
+    if(yex > 0 && xex > 0){
+        yspeed = 400/(xex + yex) * -yex;             //shoul calc the speed for x and y if total is 400
+        xspeed = 400/(xex + yex) * xex;
+    }
+    else if(yex > 0 && xex <= 0)
+    {
+        yspeed = 400/(-xex + yex) * -yex;             //shoul calc the speed for x and y if total is 400
+        xspeed = 400/(-xex + yex) * xex;
+    }
+    else if(yex <= 0 && xex > 0)
+    {
+        yspeed = 400/(xex + -yex) * -yex;             //shoul calc the speed for x and y if total is 400
+        xspeed = 400/(xex + -yex) * xex;
+    }
+    else if(yex <= 0 && xex <= 0)
+    {
+        yspeed = 400/(-xex + -yex) * -yex;             //shoul calc the speed for x and y if total is 400
+        xspeed = 400/(-xex + -yex) * xex;
+    }
+    console.log('here we create a new projectile with x = ' + xspeed + ' and y speed ' + yspeed);
+
+    CreateProjectile(xspeed, yspeed);
+
+};
+
+CreateProjectile = function(xspeed, yspeed){
+    var xPos = character.xPosition + character.width/2;
+    var yPos = character.yPosition + character.height/2;
+    var projectile  = {
+        xPos: xPos,
+        yPos: yPos,
+        xSpeed: xspeed,
+        ySpeed: yspeed,
+        age: Date.now(),
+    }
+    proj.push(projectile);
 };
 
 //Socket logic here
