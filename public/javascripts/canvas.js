@@ -38,13 +38,21 @@ $(function(){
         bul.yPos += bul.ySpeed * delta;
     };
 
+    ProjAge = function(bul, index){
+        age = Date.now() - bul.age;
+        if(age > 3000){
+            proj.splice(index, 1);
+        }
+    };
+
     logic = function(delta){
         chars.forEach(function(char){
             move(char, delta);
         });
 
-        proj.forEach(function(bul){
+        proj.forEach(function(bul, index, array){
             ProjMove(bul, delta);
+            ProjAge(bul, index);
         })
     };
     resetCanvas = function() {
@@ -268,8 +276,10 @@ CreateProjectile = function(xspeed, yspeed){
         xSpeed: xspeed,
         ySpeed: yspeed,
         age: Date.now(),
-    }
+    };
     proj.push(projectile);
+    socket.emit('bang', projectile);
+
 };
 
 //Socket logic here
@@ -367,4 +377,9 @@ socket.on('syncHim', function(char){
     {
         console.log('what char?');
     }
+});
+
+socket.on('pow', function(bul){
+    console.log('POW!');
+    proj.push(bul);
 });

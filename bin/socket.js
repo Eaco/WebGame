@@ -83,6 +83,11 @@ module.exports = function (io) {
                 console.log('Can\'t synch a char that doesn\'t exit');
             }
         });
+        
+        socket.on('bang', function (proj) {
+            console.log('pow')
+           socket.broadcast.emit('pow', proj);
+        });
 
 
         getIndexFromId = function (id){
