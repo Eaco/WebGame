@@ -380,6 +380,19 @@ socket.on('syncHim', function(char){
 });
 
 socket.on('pow', function(bul){
-    console.log('POW!');
+    //console.log('POW!');
     proj.push(bul);
+});
+
+socket.on('leaving', function (id){
+    var ind = getIndexFromId(id);
+    if(ind != -1)
+    {
+        chars.splice(ind, 1);
+        console.log('character logged out')
+    }
+    else
+    {
+        console.log('Tried to disconnect a user that didnt exist');
+    }
 });

@@ -62,6 +62,8 @@ module.exports = function (io) {
             else {
                 console.log('User not disconnected properly')
             }
+            console.log('broadcasting the leaving message');
+            socket.broadcast.emit('leaving', socket.id);
         });
 
         socket.on('rotate', function(rotation){
