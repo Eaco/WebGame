@@ -88,6 +88,7 @@ module.exports = function (io) {
         
         socket.on('bang', function (proj) {
             console.log('pow')
+            proj.shooterId = socket.id;
            socket.broadcast.emit('pow', proj);
         });
 

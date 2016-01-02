@@ -2,6 +2,9 @@ $(function(){
     //Declaring Global Variables
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
+
+
+    //Image loading
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
     var bulImg = new Image();
@@ -22,6 +25,11 @@ $(function(){
     }, false);
 
 
+    window.addEventListener("beforeunload", function (event) {
+        socket.emit('disconnect');                                          //just to make sure that we send a disconnect no matter what
+    });
+
+        //Main game logic functions
     move = function(char, delta){
         if(char.left && char.xPosition <= (context.canvas.width - char.width))
             char.xPosition += char.speed * delta;
@@ -31,6 +39,21 @@ $(function(){
             char.yPosition -= char.speed * delta;
         if(char.down && char.yPosition <= context.canvas.height - char.height)
             char.yPosition += char.speed * delta;
+    };
+
+    ProjCollision = function(bul, index){
+        chars.forEach(function(char){
+            if(char.xPosition < bul.xPos && (char.xPosition + char.width) > bul.xPos){
+                if(char.yPosition < bul.yPos && (char.yPosition + char.height) > bul.yPos){
+                    if(bul.shooterId != char.id){
+                        console.log('HIT');
+                    }
+                    else{
+                        console.log('friendly fire ignored');
+                    }
+                }
+            }
+        })
     };
 
     ProjMove = function(bul, delta){
@@ -53,6 +76,7 @@ $(function(){
         proj.forEach(function(bul, index, array){
             ProjMove(bul, delta);
             ProjAge(bul, index);
+            ProjCollision(bul, index);
         })
     };
     resetCanvas = function() {
@@ -224,7 +248,7 @@ $(document).keyup(function(e){
 //helper functions
 ForceSync = function(char){
     socket.emit('syncMe', char);
-}
+};
 
 
 
@@ -276,6 +300,7 @@ CreateProjectile = function(xspeed, yspeed){
         xSpeed: xspeed,
         ySpeed: yspeed,
         age: Date.now(),
+        shooterId: 0,
     };
     proj.push(projectile);
     socket.emit('bang', projectile);
