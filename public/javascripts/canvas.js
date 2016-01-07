@@ -3,13 +3,15 @@ $(function(){
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
 
-
     //Image loading
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
     var bulImg = new Image();
-    bulImg.src = "https://allisterf.files.wordpress.com/2010/09/bullet.gif"
+    bulImg.src = "http://www.clker.com/cliparts/6/W/n/M/T/D/rock-outline-turn.svg"
     var mousePos = {x: 0, y: 0};
+    var clamimg = new Image();
+    clamimg.src = "http://school.discoveryeducation.com/clipart/images/shell.gif"
+
 
 
     //eventListeners
@@ -112,7 +114,11 @@ $(function(){
         });
         proj.forEach(function(bul){
             drawBul(bul);
-        })
+        });
+        //draw the clam "goal"
+        if(clam != null) {
+            context.drawImage(clamimg, clam.xPosition, clam.yPosition, clam.width, clam.height);
+        };
 
 
     };
@@ -146,7 +152,7 @@ $(function(){
     socket.emit('loaded');
     main();
 });
-
+var clam = {};
 var socket = io.connect();
 var RIGHT_KEY_CODE = 68;
 var LEFT_KEY_CODE = 65;
@@ -170,6 +176,8 @@ var character =
     right: false,
     rotation: 0,
 };
+
+
 
 chars.push(character);
 
@@ -420,4 +428,10 @@ socket.on('leaving', function (id){
     {
         console.log('Tried to disconnect a user that didnt exist');
     }
+});
+
+
+socket.on("clamPosition", function (newClam){
+    console.log('lol worked ' +  newClam.xPosition + ' ' + newClam.yPosition);
+    clam = newClam;
 });

@@ -3,9 +3,29 @@
  */
 var chars = [];
 module.exports = function (io) {
-    console.log('loading socket.io')
+    console.log('loading socket.io');
+    var clam =
+    {
+        xPosition: 0,
+        yPosition: 0,
+        height: 100,
+        width: 100,
+        open: false
+    };
+
+    getRandom = function(min, max) {
+        return min + Math.random() * (max - min);
+    };
+
+
+    clam.xPosition = getRandom(0, 1920);
+    clam.yPosition = getRandom(0, 1080);
+
+
+
     io.sockets.on('connection', function (socket) {
         console.log('connection from socket: ' + socket.id);
+        socket.emit("clamPosition", clam);
         var character =
         {
             id: socket.id,
@@ -20,6 +40,7 @@ module.exports = function (io) {
             right: false,
             rotation: 0
         };
+
         chars.push(character);
 
         socket.broadcast.emit('newchar', socket.id);
@@ -82,7 +103,7 @@ module.exports = function (io) {
 
             }
             else{
-                console.log('Can\'t synch a char that doesn\'t exit');
+                console.log('Can\'t synch a char that doesn\'t exist');
             }
         });
         
@@ -101,5 +122,6 @@ module.exports = function (io) {
             }
             return -1;
         }
+
     });
 };
