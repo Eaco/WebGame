@@ -70,10 +70,25 @@ $(function(){
         }
     };
 
+    checkIfOnClam = function(char){
+        if(char.xPosition + char.width > clam.xPosition && char.xPosition < clam.xPosition + clam.width){
+            if(char.yPosition + char.height > clam.yPosition && char.yPosition < clam.yPosition + clam.height){
+                console.log('claiming point!');
+                socket.emit('claiming point!');
+                clam.open = false;
+            }
+        }
+    };
+
     logic = function(delta){
         chars.forEach(function(char){
             move(char, delta);
         });
+
+        if(clam.open == true){
+            checkIfOnClam(character);
+        }
+
 
         proj.forEach(function(bul, index, array){
             ProjMove(bul, delta);
@@ -109,16 +124,19 @@ $(function(){
         //console.log("rendering");
 
         resetCanvas();
-        chars.forEach(function(char){
-            drawChar(char);
-        });
-        proj.forEach(function(bul){
-            drawBul(bul);
-        });
         //draw the clam "goal"
         if(clam != null) {
             context.drawImage(clamimg, clam.xPosition, clam.yPosition, clam.width, clam.height);
-        };
+        }
+        //draw characters
+        chars.forEach(function(char){
+            drawChar(char);
+        });
+        //draw projectiles
+        proj.forEach(function(bul){
+            drawBul(bul);
+        });
+
 
 
     };
@@ -337,7 +355,7 @@ socket.on('newchar', function(id){
 });
 
 socket.on('rotationToClient', function(rotation, id){
-    console.log('reaching rotation from ' + id);
+    //console.log('reaching rotation from ' + id);
     var ind = getIndexFromId(id);
     if(chars[ind] != null){
         chars[ind].rotation = rotation;
