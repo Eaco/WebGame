@@ -80,7 +80,13 @@ $(function(){
         }
     };
 
-    CheckIfClamHit = function(){
+    CheckIfClamHit = function(rock){
+        if(rock.xPos > clam.xPosition && rock.xPos < clam.xPosition + clam.width){
+            if(rock.yPos > clam.yPosition && rock.yPos < clam.yPosition + clam.height){
+                console.log('Clam Hit!');
+                clam.open = true;
+            }
+        }
                 //TODO gotta do class, fix this next
     };
 
@@ -93,14 +99,14 @@ $(function(){
         if(clam.open == true){
             checkIfOnClam(character);
         }
-        else{
-
-        }
 
         proj.forEach(function(bul, index, array){
             ProjMove(bul, delta);
             ProjAge(bul, index);
             ProjCollision(bul, index);
+            if(clam.open == false) {
+                CheckIfClamHit(bul);
+            }
         })
     };
     resetCanvas = function() {

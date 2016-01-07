@@ -10,7 +10,7 @@ module.exports = function (io) {
         yPosition: 0,
         height: 100,
         width: 100,
-        open: true
+        open: false
     };
 
     getRandom = function(min, max) {
