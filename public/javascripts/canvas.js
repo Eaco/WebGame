@@ -74,7 +74,7 @@ $(function(){
         if(char.xPosition + char.width > clam.xPosition && char.xPosition < clam.xPosition + clam.width){
             if(char.yPosition + char.height > clam.yPosition && char.yPosition < clam.yPosition + clam.height){
                 console.log('claiming point!');
-                socket.emit('claiming point!');
+                socket.emit('claiming');
                 clam.open = false;
             }
         }

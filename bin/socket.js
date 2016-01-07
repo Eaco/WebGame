@@ -17,12 +17,13 @@ module.exports = function (io) {
         return min + Math.random() * (max - min);
     };
 
+    randomclam = function() {
+        clam.xPosition = getRandom(0, 1920);
+        clam.yPosition = getRandom(0, 1080);
+    };
 
-    clam.xPosition = getRandom(0, 1920);
-    clam.yPosition = getRandom(0, 1080);
 
-
-
+    randomclam();
     io.sockets.on('connection', function (socket) {
         console.log('connection from socket: ' + socket.id);
         socket.emit("clamPosition", clam);
@@ -93,6 +94,12 @@ module.exports = function (io) {
             socket.broadcast.emit('rotationToClient', rotation, socket.id);
         });
 
+        socket.on('claiming', function(){
+            console.log('point being claimed');
+            randomclam();
+            io.sockets.emit('clamPosition', clam);
+        });
+
         socket.on('syncMe', function(char){
             var sync = getIndexFromId(socket.id);
             if(sync != -1){
@@ -100,7 +107,6 @@ module.exports = function (io) {
                 chars[sync] = char;         //this sets ID to zero. Dammit
                 chars[sync].id = id;
                 socket.broadcast.emit('syncHim', char);
-
             }
             else{
                 console.log('Can\'t synch a char that doesn\'t exist');
@@ -108,11 +114,10 @@ module.exports = function (io) {
         });
         
         socket.on('bang', function (proj) {
-            console.log('pow')
+            console.log('pow');
             proj.shooterId = socket.id;
            socket.broadcast.emit('pow', proj);
         });
-
 
         getIndexFromId = function (id){
             for(var i = 0, charLen = chars.length; i<charLen; i++ ){
@@ -122,6 +127,5 @@ module.exports = function (io) {
             }
             return -1;
         }
-
     });
 };
