@@ -80,6 +80,11 @@ $(function(){
         }
     };
 
+    CheckIfClamHit = function(){
+                //TODO gotta do class, fix this next
+    };
+
+
     logic = function(delta){
         chars.forEach(function(char){
             move(char, delta);
@@ -88,7 +93,9 @@ $(function(){
         if(clam.open == true){
             checkIfOnClam(character);
         }
+        else{
 
+        }
 
         proj.forEach(function(bul, index, array){
             ProjMove(bul, delta);
@@ -122,7 +129,6 @@ $(function(){
 
     render = function(){
         //console.log("rendering");
-
         resetCanvas();
         //draw the clam "goal"
         if(clam != null) {
@@ -136,10 +142,8 @@ $(function(){
         proj.forEach(function(bul){
             drawBul(bul);
         });
-
-
-
     };
+
     var now = Date.now();
     var delta;
     var then = Date.now();
