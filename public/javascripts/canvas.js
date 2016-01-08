@@ -3,6 +3,9 @@ $(function(){
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
 
+    var score = [];
+
+
     //Image loading
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
@@ -129,6 +132,17 @@ $(function(){
         context.stroke();
     };
 
+    drawScore = function(){
+        context.font = '30px Comic Sans MS';
+        context.fillStyle = 'blue';
+        context.textAlign = 'center';
+        if(score != null) {
+            score.forEach(function (scor) {
+                context.fillText("player " + score.name + " has score " + score.val, canvas.width/2, canvas.height/2);
+            });
+        }
+    };
+
     drawBul = function(bul) {
         context.drawImage(bulImg, bul.xPos, bul.yPos, 20, 20);
     };
@@ -148,6 +162,7 @@ $(function(){
         proj.forEach(function(bul){
             drawBul(bul);
         });
+        drawScore();
     };
 
     var now = Date.now();
@@ -203,6 +218,7 @@ var character =
     left: false,
     right: false,
     rotation: 0,
+    score: 0,
 };
 
 
@@ -462,4 +478,9 @@ socket.on('leaving', function (id){
 socket.on("clamPosition", function (newClam){
     console.log('lol worked ' +  newClam.xPosition + ' ' + newClam.yPosition);
     clam = newClam;
+});
+
+socket.on('scoreBoard', function(scoreBoard){
+    console.log('updating score ' + scoreBoard[0].val)
+    score = scoreBoard;
 });

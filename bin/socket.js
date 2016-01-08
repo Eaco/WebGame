@@ -4,6 +4,8 @@
 var chars = [];
 module.exports = function (io) {
     console.log('loading socket.io');
+    var score = [];
+
     var clam =
     {
         xPosition: 0,
@@ -39,7 +41,8 @@ module.exports = function (io) {
             down: false,
             left: false,
             right: false,
-            rotation: 0
+            rotation: 0,
+            score: 0,
         };
 
         chars.push(character);
@@ -96,6 +99,14 @@ module.exports = function (io) {
 
         socket.on('claiming', function(){
             console.log('point being claimed');
+            var ind = getIndexFromId(socket.id);
+            if(chars[ind].score != null) {
+                chars[ind].score += 1;
+            }
+            else{
+                chars[ind].score = 1;
+            }
+            updateScoreboard();
             randomclam();
             io.sockets.emit('clamPosition', clam);
         });
@@ -118,6 +129,15 @@ module.exports = function (io) {
             proj.shooterId = socket.id;
            socket.broadcast.emit('pow', proj);
         });
+
+        updateScoreboard = function(){
+            score = [];
+            chars.forEach(function(char, index, array){
+                score.push({val: array[index].score, name: index});
+            });
+            score.sort(function(a, b){return b.val- a.val});
+            io.sockets.emit('scoreBoard', score);
+        };
 
         getIndexFromId = function (id){
             for(var i = 0, charLen = chars.length; i<charLen; i++ ){
