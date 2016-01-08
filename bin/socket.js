@@ -15,6 +15,26 @@ module.exports = function (io) {
         open: false
     };
 
+    //helper functions
+
+    updateScoreboard = function(){
+        score = [];
+        chars.forEach(function(char, index, array){
+            score.push({val: array[index].score, name: index});
+        });
+        score.sort(function(a, b){return b.val- a.val});
+        io.sockets.emit('scoreBoard', score);
+    };
+
+    getIndexFromId = function (id){
+        for(var i = 0, charLen = chars.length; i<charLen; i++ ){
+            if(chars[i].id == id){
+                return i;
+            }
+        }
+        return -1;
+    };
+
     getRandom = function(min, max) {
         return min + Math.random() * (max - min);
     };
@@ -50,7 +70,7 @@ module.exports = function (io) {
         socket.broadcast.emit('newchar', socket.id);
         console.log('what is going on here');
         socket.broadcast.emit('soundOff');
-
+        updateScoreboard();
         socket.on('loaded', function(){
             socket.emit('currentCharacters', chars, socket.id);
         });
@@ -89,6 +109,7 @@ module.exports = function (io) {
             }
             console.log('broadcasting the leaving message');
             socket.broadcast.emit('leaving', socket.id);
+            updateScoreboard();
         });
 
         socket.on('rotate', function(rotation){
@@ -131,22 +152,5 @@ module.exports = function (io) {
            socket.broadcast.emit('pow', proj);
         });
 
-        updateScoreboard = function(){
-            score = [];
-            chars.forEach(function(char, index, array){
-                score.push({val: array[index].score, name: index});
-            });
-            score.sort(function(a, b){return b.val- a.val});
-            io.sockets.emit('scoreBoard', score);
-        };
-
-        getIndexFromId = function (id){
-            for(var i = 0, charLen = chars.length; i<charLen; i++ ){
-                if(chars[i].id == id){
-                    return i;
-                }
-            }
-            return -1;
-        }
     });
 };
