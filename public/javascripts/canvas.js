@@ -3,7 +3,6 @@ $(function(){
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
 
-    var score = [];
 
 
     //Image loading
@@ -137,8 +136,8 @@ $(function(){
         context.fillStyle = 'blue';
         context.textAlign = 'center';
         if(score != null) {
-            score.forEach(function (scor) {
-                context.fillText("player " + score.name + " has score " + score.val, canvas.width/2, canvas.height/2);
+            score.forEach(function (scor, index, array) {
+                context.fillText("player " + scor.name + " has score " + scor.val, canvas.width - 200, 100 + 50 * index);
             });
         }
     };
@@ -196,6 +195,7 @@ $(function(){
     main();
 });
 var clam = {};
+var score = [];
 var socket = io.connect();
 var RIGHT_KEY_CODE = 68;
 var LEFT_KEY_CODE = 65;
@@ -483,4 +483,9 @@ socket.on("clamPosition", function (newClam){
 socket.on('scoreBoard', function(scoreBoard){
     console.log('updating score ' + scoreBoard[0].val)
     score = scoreBoard;
+});
+
+socket.on('point', function(){
+    console.log('woot we scored');
+    character.score += 1;
 });

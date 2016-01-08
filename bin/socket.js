@@ -108,6 +108,7 @@ module.exports = function (io) {
             }
             updateScoreboard();
             randomclam();
+            socket.emit('point');
             io.sockets.emit('clamPosition', clam);
         });
 
