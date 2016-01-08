@@ -86,7 +86,8 @@ $(function(){
         if(rock.xPos > clam.xPosition && rock.xPos < clam.xPosition + clam.width){
             if(rock.yPos > clam.yPosition && rock.yPos < clam.yPosition + clam.height){
                 console.log('Clam Hit!');
-                clam.open = true;
+                socket.emit('clamHit');
+                //clam.open = true;
             }
         }
                 //TODO gotta do class, fix this next
@@ -488,4 +489,8 @@ socket.on('scoreBoard', function(scoreBoard){
 socket.on('point', function(){
     console.log('woot we scored');
     character.score += 1;
+});
+socket.on('clamOpen', function(){
+    console.log('opening clam')
+    clam.open = true;
 });

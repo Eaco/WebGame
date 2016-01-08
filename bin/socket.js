@@ -40,6 +40,7 @@ module.exports = function (io) {
     };
 
     randomclam = function() {
+        clam.open = false;
         clam.xPosition = getRandom(0, 1920);
         clam.yPosition = getRandom(0, 1080);
     };
@@ -116,6 +117,12 @@ module.exports = function (io) {
             var ind = getIndexFromId(socket.id);
             chars[ind].rotation = rotation;
             socket.broadcast.emit('rotationToClient', rotation, socket.id);
+        });
+
+        socket.on('clamHit', function(){
+           io.sockets.emit('clamOpen');
+            console.log('Opening clam');
+            clam.open = true;
         });
 
         socket.on('claiming', function(){
