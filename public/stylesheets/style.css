@@ -7,6 +7,6 @@ html, body {
   margin: 0px;
 }
 .game{
-   background-image: url(/images/garrssss.png);
-   background-size: 100% 100%;
+    background-image: url(/images/garrssss.png);
+    background-size: 1600px 800px;
 }

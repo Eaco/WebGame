@@ -42,8 +42,8 @@ module.exports = function (io) {
 
     randomclam = function() {
         clam.open = false;
-        clam.xPosition = getRandom(0, 1920);
-        clam.yPosition = getRandom(0, 1080);
+        clam.xPosition = getRandom(0, 1600);
+        clam.yPosition = getRandom(0, 800);
     };
 
 

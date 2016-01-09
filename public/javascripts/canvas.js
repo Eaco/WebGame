@@ -4,7 +4,6 @@ $(function(){
     var context = canvas.getContext('2d');
 
 
-
     //Image loading
     var imageObj = new Image();
     imageObj.src = "http://www.otter-world.com/wp-content/uploads/Otter_Standing_Showing_Teeth_600.jpg";
@@ -114,14 +113,16 @@ $(function(){
         })
     };
     resetCanvas = function() {
-        context.canvas.width  = window.innerWidth;
-        context.canvas.height = window.innerHeight;
+        context.canvas.width  = 1600; //TODO Need unified size
+        context.canvas.height = 1000;
         context.clearRect(0, 0, canvas.width, canvas.height);
     };
 
     drawChar = function(char){
         //console.log(char.rotation);
         //console.log('drawing char ' + char.id + ' at rotation ' + char.rotation);
+        context.beginPath();
+        context.strokeStyle = 'black'
         context.translate( char.xPosition + char.width / 2, char.yPosition + char.height / 2 );
         context.rotate(-char.rotation);
         context.translate( -char.width / 2, - char.height / 2 );
@@ -153,7 +154,19 @@ $(function(){
         resetCanvas();
         //draw the clam "goal"
         if(clam != null) {
+            if (clam.open == false)
+            {
+                context.strokeStyle = 'red';
+            }
+            else
+            {
+                context.strokeStyle = 'blue';
+            }
+            context.beginPath();
+            context.rect(clam.xPosition -5, clam.yPosition - 5, clam.width + 10, clam.height + 10);
             context.drawImage(clamimg, clam.xPosition, clam.yPosition, clam.width, clam.height);
+            //context.strokeStyle = 'black';
+            context.stroke();
         }
         //draw characters
         chars.forEach(function(char){
@@ -228,7 +241,7 @@ var character =
 chars.push(character);
 
 
-// CLIENT INPUT HERER
+// CLIENT INPUT HERE
 getMousePos =  function(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -476,7 +489,6 @@ socket.on('leaving', function (id){
     }
 });
 
-
 socket.on("clamPosition", function (newClam){
     console.log('lol worked ' +  newClam.xPosition + ' ' + newClam.yPosition);
     clam = newClam;
@@ -491,6 +503,7 @@ socket.on('point', function(){
     console.log('woot we scored');
     character.score += 1;
 });
+
 socket.on('clamOpen', function(){
     console.log('opening clam')
     clam.open = true;
