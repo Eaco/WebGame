@@ -8,5 +8,6 @@ html, body {
 }
 .game{
     background-image: url(/images/garrssss.png);
-    background-size: 1600px 800px;
+    background-size: 1600px 1000px;
+    background-repeat: no-repeat;
 }
