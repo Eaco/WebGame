@@ -77,6 +77,7 @@ $(function(){
             if(char.yPosition + char.height > clam.yPosition && char.yPosition < clam.yPosition + clam.height){
                 console.log('claiming point!');
                 socket.emit('claiming');
+                clam.lock = true;
                 clam.open = false;
             }
         }
@@ -99,7 +100,7 @@ $(function(){
             move(char, delta);
         });
 
-        if(clam.open == true){
+        if(clam.open == true && clam.lock == false){
             checkIfOnClam(character);
         }
 
@@ -107,8 +108,8 @@ $(function(){
             ProjMove(bul, delta);
             ProjAge(bul, index);
             ProjCollision(bul, index);
-            if(clam.open == false) {
-                CheckIfClamHit(bul);
+            if(clam.open == false && clam.lock == false) {
+                CheckIfClamHit(bul, index);
             }
         })
     };

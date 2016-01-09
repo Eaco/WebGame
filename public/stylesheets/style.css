@@ -6,3 +6,7 @@ html, body {
   height: 100%;
   margin: 0px;
 }
+.game{
+   background-image: url(/images/garrssss.png);
+   background-size: 100% 100%;
+}

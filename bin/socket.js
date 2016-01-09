@@ -12,7 +12,8 @@ module.exports = function (io) {
         yPosition: 0,
         height: 100,
         width: 100,
-        open: false
+        open: false,
+        lock: false
     };
 
     //helper functions
@@ -128,11 +129,13 @@ module.exports = function (io) {
         socket.on('claiming', function(){
             console.log('point being claimed');
             var ind = getIndexFromId(socket.id);
-            if(chars[ind].score != null) {
-                chars[ind].score += 1;
-            }
-            else{
-                chars[ind].score = 1;
+            if(clam.open == true) {
+                if (chars[ind].score != null) {
+                    chars[ind].score += 1;
+                }
+                else {
+                    chars[ind].score = 1;
+                }
             }
             updateScoreboard();
             randomclam();
