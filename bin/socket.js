@@ -162,5 +162,12 @@ module.exports = function (io) {
            socket.broadcast.emit('pow', proj);
         });
 
+        socket.on('charHit', function(char, index){
+            console.log('charHit event');
+            if (io.sockets.connected[char.id]) {
+                io.sockets.connected[char.id].emit('charHit', char, index);
+            }
+        });
+
     });
 };

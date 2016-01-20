@@ -50,6 +50,8 @@ $(function(){
                 if(char.yPosition < bul.yPos && (char.yPosition + char.height) > bul.yPos){
                     if(bul.shooterId != char.id){
                         console.log('HIT');
+                        socket.emit('charHit', char, index);
+                        proj.splice(index, 1);
                     }
                     else{
                         console.log('friendly fire ignored');
@@ -82,11 +84,12 @@ $(function(){
         }
     };
 
-    CheckIfClamHit = function(rock){
+    CheckIfClamHit = function(rock, index){
         if(rock.xPos > clam.xPosition && rock.xPos < clam.xPosition + clam.width){
             if(rock.yPos > clam.yPosition && rock.yPos < clam.yPosition + clam.height){
                 console.log('Clam Hit!');
                 socket.emit('clamHit');
+                proj.splice(index, 1);
                 //clam.open = true;
             }
         }
@@ -95,8 +98,16 @@ $(function(){
 
 
     logic = function(delta){
+        var now = Date.now();
+        var stunDelta =(now - character.stuntime)/1000;
+        if(stunDelta > 5){
+            character.stun = false;
+        }
+
         chars.forEach(function(char){
-            move(char, delta);
+            if(char.stun != true){
+                move(char, delta);
+            }
         });
 
         if(clam.open == true && clam.lock == false){
@@ -234,6 +245,8 @@ var character =
     right: false,
     rotation: 0,
     score: 0,
+    stun: false,
+    stuntime: 0,
 };
 
 
@@ -278,7 +291,10 @@ $(document).keydown(function(e){
         else if(code == RIGHT_KEY_CODE){
             character.left = true;
         }
-        socket.emit('key', code);
+        if(character.stun == false)
+        {
+            socket.emit('key', code);
+        }
 
         console.log(code + " Down");
     }
@@ -304,8 +320,10 @@ $(document).keyup(function(e){
             character.left = false;
             ForceSync(character);
         }
-        socket.emit('!key', code)
-
+        if(character.stun == false)
+        {
+            socket.emit('!key', code)
+        }
         console.log(code + " up");
     }
 });
@@ -326,7 +344,7 @@ getIndexFromId = function (id){
         }
     }
     return -1;
-}
+};
 
 projectile = function(click){
     var xex = Math.cos(character.rotation);
@@ -391,6 +409,8 @@ socket.on('newchar', function(id){
         left: false,
         right: false,
         rotation: 0,
+        stun: false,
+        stunTime: null,
     };
     chars.push(newCharacter);
 });
@@ -505,6 +525,13 @@ socket.on('point', function(){
 });
 
 socket.on('clamOpen', function(){
-    console.log('opening clam')
+    console.log('opening clam');
     clam.open = true;
+});
+
+socket.on('charHit', function(char, index) {
+    proj.splice(index, 1);
+    console.log('OTTER DOWWWWWNNN');
+    character.stun = true;
+    character.stuntime = Date.now();
 });
